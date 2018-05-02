@@ -1,13 +1,13 @@
 const stompit = require('stompit');
 
 var connectOptions = {
-  'host': 'b-bff59fc8-16c7-4dd8-a462-05fd007c4f5a-1.mq.ap-southeast-2.amazonaws.com',
+  'host': process.env.AmazonMQHost,
   'port': 61614,
   'ssl': true,
   'connectHeaders': {
     'host': '/',
-    'login': 'chrisd',
-    'passcode': 'v23iNP5@7n!0'
+    'login': process.env.AmazonMQUser,
+    'passcode': process.env.AmazonMQPassword
   }
 };
 
@@ -22,7 +22,7 @@ stompit.connect(connectOptions, function (error, client) {
   console.log("Connected to AMQ.");
 
   var subscribeHeaders = {
-    'destination': '/queue/test',
+    'destination': process.env.AmazonMQQueue,
     'ack': 'client-individual'
   };
 

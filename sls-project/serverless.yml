@@ -51,10 +51,11 @@ functions:
   
   dynamoStream:
     handler: src/stream.handler
-    environment: 
+    environment:
       AmazonMQHost: ${env:AMQHOST}
       AmazonMQUser: ${env:AMQUSER}
       AmazonMQPassword: ${env:AMQPASSWORD}
+      AmazonMQQueue: ${env:AMQQUEUE}
     events:
       - stream:
           arn: 

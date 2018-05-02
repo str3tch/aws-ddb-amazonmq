@@ -8,85 +8,112 @@ This is a PoC to show that AmazonMQ could be used in place of SQS, so that messa
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+This poc utilises the serverless framework to deploy the database, stream and lambdas. 
+
+Then there is some manual configuration for the AmazonMQ (as it is not supported in CloudFormation yet)
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+You will need Node installed
 
-```
-Give examples
-```
+
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
-
-Say what the step will be
+Install the serverless framework globally
 
 ```
-Give the example
+npm i -g serverless
 ```
 
-And repeat
+Now install the packages for the serverless project
 
 ```
-until finished
+cd sls-project
+npm install
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+## Setup AmazonMQ
 
-## Running the tests
+Follow these instructions to setup your AmazonMQ broker.
 
-Explain how to run the automated tests for this system
+https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-creating-configuring-broker.html
 
-### Break down into end to end tests
+### Store broker credentials in environment vars
 
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
+The connection creds are required by the lamdbas, and these are read from local env vars prior to deploying to AWS.
 
 ```
-Give an example
+export AMQHOST=<host, eg. 123abc-1.mq.ap-southeast-2.amazonaws.com>
+export AMQUSER=<username>
+export AMQPASSWORD=<password>
+export AMQQUEUE=/sample/test
 ```
 
-## Deployment
+## Deploying the serverless project
 
-Add additional notes about how to deploy this on a live system
+```
+sls deploy
+```
 
-## Built With
+*Note* the endpoint which is displayed at the end of the deployment. You need this to POST some test data later.
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+```
+endpoints:
+  POST - https://xyz1234.execute-api.ap-southeast-2.amazonaws.com/dev/add
+```
 
-## Contributing
+## Setup a receiver 
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Open a terminal window and navigate to the *amq_clients*. Ensure that the env vars from above are set in this terminal. Then run node app.
 
-## Versioning
+```
+export AMQHOST=<host, eg. 123abc-1.mq.ap-southeast-2.amazonaws.com>
+export AMQUSER=<username>
+export AMQPASSWORD=<password>
+export AMQQUEUE=/sample/test
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+node receive.js
+```
 
-## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+## Send data to Dynamo
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+You now need to make a post to Dynamo, use curl or postman, with the following payload:
+
+```
+{
+  "id": "123",
+  "payload": "some data to store"
+}
+```
+
+After doing the post, you should see the entry turn up in your receiver terminal.
+
+This data has taken the following path:
+
+1. Data sent via HTTPS to API Gateway using POST
+2. API Gateway calls the `post` method in `dynamo.js`
+3. This lambda inserts data into DynanoDB
+4. DynamoDB puts KEYS_ONLY entry in DynamoDB Streams
+5. Streams triggers the `handler` method in `stream.js`
+6. This lamdba retrives the item from DynamoDB (not Streams)
+7. Connects to AmazonMQ broker, sends item onto queue
+8. Receiver (`recieve.js`) is listening on the same queue and outputs the message
+
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Acknowledgments
+## Further reading
 
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+This is a very simple proof of concept. To get more details of what AmazonMQ can offer, the following are good starting places:
+
+  * [Amazon MQ landing page](https://aws.amazon.com/amazon-mq/)
+
+  * [AmazonMQ Developer Guide pdf](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-dg.pdf)
+
+  * [Apache ActiveMQ cross language clients](http://activemq.apache.org/connectivity.html)
+
 

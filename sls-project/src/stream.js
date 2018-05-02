@@ -29,7 +29,7 @@ exports.handler = (event, context, callback) => {
         console.log("Connected to AmazonMQ broker successfully");
 
         var sendHeaders = {
-            'destination': '/queue/test',
+            'destination': process.env.AmazonMQQueue,
             'content-type': 'text/plain'
         };
 
