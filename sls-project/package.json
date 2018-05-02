@@ -1,0 +1,17 @@
+{
+  "name": "amq-poc",
+  "version": "1.0.0",
+  "description": "AmazonMQ proof of concept",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "Chris Dorrington",
+  "license": "ISC",
+  "devDependencies": {
+    "aws-sdk": "^2.230.1"
+  },
+  "dependencies": {
+    "stompit": "^0.25.0"
+  }
+}

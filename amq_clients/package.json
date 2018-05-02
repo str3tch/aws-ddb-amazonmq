@@ -1,0 +1,16 @@
+{
+  "name": "AmazonMQ-Subscriber",
+  "version": "1.0.0",
+  "description": "Connects to AMQ and logs messages",
+  "author": "Chris Dorrington",
+  "main": "server.js",
+  "scripts": {
+    "start": "node publish.js"
+  },
+  "devDependences": {
+    "aws-sdk": "^2.230.1"
+  },
+  "dependencies": {
+    "stompit": "^0.25.0"
+  }
+}
