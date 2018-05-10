@@ -1,6 +1,6 @@
 # Dynamo Streams / AmazonMQ proof of concept
 
-This is a PoC to show that AmazonMQ could be used in place of SQS, so that messages are sent on actions on DDB via Streams. 
+This is a PoC to show that AmazonMQ linked up to DynamoDB Streams, ensuring that all data sent will be encrypted at rest and in transit
 
 
 ![Architecture](architecture.png)
