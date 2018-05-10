@@ -39,10 +39,18 @@ Follow these instructions to setup your AmazonMQ broker.
 
 https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-creating-configuring-broker.html
 
+record the credentials:
+```
+host, eg. 123abc-1.mq.ap-southeast-2.amazonaws.com
+username
+password
+```
+
 ### Store broker credentials in environment vars
 
 The connection creds are required by the lamdbas, and these are read from local env vars prior to deploying to AWS.
 
+Set the following in your terminal:
 ```
 export AMQHOST=<host, eg. 123abc-1.mq.ap-southeast-2.amazonaws.com>
 export AMQUSER=<username>
