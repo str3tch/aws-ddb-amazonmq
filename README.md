@@ -1,4 +1,4 @@
-# Dynamo Streams / AmazonMQ proof of concept
+# Dynamo Streams with AmazonMQ 
 
 This is a PoC to show that AmazonMQ linked up to DynamoDB Streams, ensuring that all data sent will be encrypted at rest and in transit
 
